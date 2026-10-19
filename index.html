@@ -475,19 +475,21 @@
     background: var(--chat-ai);
     border-bottom-right-radius: 4px;
   }
-  .chat-msg.thinking {
-    align-self: flex-start;
-    background: var(--chat-ai);
-    border-bottom-right-radius: 4px;
-    color: var(--fg-muted);
-    font-style: italic;
+  .chat-msg.typing .dots { display: inline; }
+  .chat-msg.typing .dots span {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--fg-dim);
+    margin: 0 2px;
+    animation: dot-bounce 1.2s infinite;
   }
-  .chat-msg.error {
-    align-self: center;
-    background: var(--coral-soft);
-    color: var(--coral);
-    font-size: 13px;
-    text-align: center;
+  .chat-msg.typing .dots span:nth-child(2) { animation-delay: 0.2s; }
+  .chat-msg.typing .dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dot-bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-4px); }
   }
   .chat-input-wrap {
     padding: 12px 16px;
@@ -530,16 +532,6 @@
   }
   .chat-send:hover { background: var(--teal-hover); }
   .chat-send:disabled { opacity: 0.5; cursor: default; }
-  .chat-unavailable {
-    padding: 24px 16px;
-    text-align: center;
-    color: var(--fg-muted);
-    font-size: 13px;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
   .suggestions {
     padding: 0 16px 12px;
     display: flex;
@@ -942,13 +934,17 @@
     </button>
   </div>
   <div class="chat-messages" id="chat-messages">
-    <div class="chat-msg ai">مرحباً! أنا المساعد الصحي. يمكنني مساعدتك بأي أسئلة حول التحضير للعملية الجراحية، الصيام، الأدوية، أو ما يمكن توقعه. كيف يمكنني مساعدتك؟</div>
-  </div>
-  <div class="suggestions" id="suggestions">
-    <button class="suggestion-chip" data-q="ما هي تعليمات الصيام قبل العملية؟">تعليمات الصيام</button>
-    <button class="suggestion-chip" data-q="ما الأدوية التي يجب إيقافها قبل العملية؟">إيقاف الأدوية</button>
-    <button class="suggestion-chip" data-q="ماذا أحضر معي يوم العملية؟">ماذا أحضر؟</button>
-    <button class="suggestion-chip" data-q="كم تستغرق فترة التعافي بعد استئصال المرارة بالمنظار؟">فترة التعافي</button>
+    <div class="chat-msg ai">مرحباً! أنا المساعد الصحي. يمكنني مساعدتك بأسئلة حول التحضير للعملية الجراحية. اختر سؤالاً أو اكتب سؤالك:</div>
+    <div class="suggestions" id="suggestions">
+      <button class="suggestion-chip" data-q="fasting">تعليمات الصيام</button>
+      <button class="suggestion-chip" data-q="meds">إيقاف الأدوية</button>
+      <button class="suggestion-chip" data-q="bring">ماذا أحضر؟</button>
+      <button class="suggestion-chip" data-q="recovery">فترة التعافي</button>
+      <button class="suggestion-chip" data-q="anesthesia">التخدير</button>
+      <button class="suggestion-chip" data-q="pain">الألم بعد العملية</button>
+      <button class="suggestion-chip" data-q="food">الأكل بعد العملية</button>
+      <button class="suggestion-chip" data-q="shower_post">الاستحمام بعد العملية</button>
+    </div>
   </div>
   <div class="chat-input-wrap">
     <textarea class="chat-input" id="chat-input" rows="1" placeholder="اكتب سؤالك هنا..." dir="rtl"></textarea>
@@ -1042,114 +1038,166 @@
   setInterval(updateCountdown, 60000);
   renderNav(); showPhase(); updateProgress();
 
-  // Chat
+  // Chat — self-contained FAQ bot
+  const faq = {
+    fasting: {
+      q: 'ما هي تعليمات الصيام قبل العملية؟',
+      a: 'تعليمات الصيام مهمة جداً لسلامتك أثناء التخدير:\n\n• توقف عن الأكل بعد منتصف الليل في الليلة السابقة للعملية\n• يُسمح بشرب سوائل صافية (ماء، عصير تفاح بدون لب، قهوة سوداء بدون حليب) حتى ساعتين قبل موعد وصولك\n• لا تمضغ علكة أو تأكل حلوى صباح العملية\n• إذا كنت مريض سكري، استشر طبيبك عن كيفية إدارة مستوى السكر أثناء الصيام\n\nالصيام يمنع مضاعفات خطيرة أثناء التخدير. اتبع تعليمات فريقك الطبي بدقة.',
+      follow: ['meds', 'anesthesia', 'bring']
+    },
+    meds: {
+      q: 'ما الأدوية التي يجب إيقافها قبل العملية؟',
+      a: 'قبل العملية بأسبوع تقريباً، قد يطلب منك الجراح إيقاف بعض الأدوية:\n\n• مميعات الدم: الأسبرين، الوارفارين، كلوبيدوقرل (بلافكس)\n• مضادات الالتهاب: إيبوبروفين، نابروكسين، ديكلوفيناك\n• المكملات الغذائية: زيت السمك، فيتامين E، الجنكو، الثوم المركّز\n• المكملات العشبية: نبتة سانت جون، الجينسنغ\n\nمهم جداً: لا تتوقف عن أي دواء بدون استشارة الجراح أولاً. بعض الأدوية مثل أدوية القلب والضغط قد تحتاج الاستمرار عليها.',
+      follow: ['fasting', 'pain', 'recovery']
+    },
+    bring: {
+      q: 'ماذا أحضر معي يوم العملية؟',
+      a: 'أحضر معك هذه الأشياء الأساسية:\n\n📋 المستندات:\n• هوية بصورة (بطاقة وطنية أو جواز سفر)\n• بطاقة التأمين الصحي\n• نماذج الموافقة الموقّعة\n• قائمة أدويتك الحالية\n\n👕 الملابس:\n• ملابس واسعة ومريحة للعودة\n• حذاء سهل الارتداء بدون أربطة\n• لا تلبس مجوهرات أو ساعات\n\n📱 أغراض شخصية:\n• الهاتف والشاحن\n• كتاب أو شيء لتمضية الوقت\n\n🚫 اترك في البيت:\n• الأشياء الثمينة والمبالغ الكبيرة\n• العدسات اللاصقة (أحضر نظارات بدلاً)',
+      follow: ['fasting', 'anesthesia', 'recovery']
+    },
+    recovery: {
+      q: 'كم تستغرق فترة التعافي بعد استئصال المرارة بالمنظار؟',
+      a: 'فترة التعافي من استئصال المرارة بالمنظار عادةً قصيرة نسبياً:\n\n• معظم المرضى يغادرون المستشفى في نفس اليوم أو اليوم التالي\n• يمكنك المشي الخفيف في نفس يوم العملية\n• العودة للأنشطة الخفيفة: خلال ٣-٥ أيام\n• العودة للعمل المكتبي: خلال أسبوع تقريباً\n• العودة للعمل البدني: بعد ٢-٤ أسابيع\n• التعافي الكامل: ٤-٦ أسابيع\n\nتجنب رفع أشياء ثقيلة (أكثر من ٥ كغ) لمدة ٢-٤ أسابيع. اتبع تعليمات جراحك الخاصة بحالتك.',
+      follow: ['pain', 'food', 'shower_post']
+    },
+    anesthesia: {
+      q: 'ماذا أتوقع من التخدير؟',
+      a: 'التخدير العام هو الأكثر شيوعاً لاستئصال المرارة بالمنظار:\n\n• قبل العملية: سيقابلك طبيب التخدير ويسألك عن تاريخك الطبي والحساسية\n• أثناء العملية: ستكون نائماً تماماً ولن تشعر بأي شيء\n• بعد الاستيقاظ: قد تشعر بالنعاس والغثيان لبضع ساعات — هذا طبيعي\n• التهاب الحلق الخفيف طبيعي بسبب أنبوب التنفس\n\nمهم:\n• أخبر طبيب التخدير عن أي حساسية سابقة\n• أخبره إذا كنت أنت أو أحد أفراد عائلتك واجه مشاكل مع التخدير سابقاً\n• لن تتمكن من القيادة لمدة ٢٤ ساعة بعد التخدير',
+      follow: ['fasting', 'pain', 'recovery']
+    },
+    pain: {
+      q: 'كيف سيكون الألم بعد العملية؟',
+      a: 'الألم بعد استئصال المرارة بالمنظار عادةً خفيف إلى متوسط:\n\n• ألم في مواضع الجروح الصغيرة (٣-٤ فتحات صغيرة)\n• ألم في الكتف الأيمن — هذا طبيعي بسبب غاز CO2 المستخدم أثناء العملية ويزول خلال ١-٢ يوم\n• انتفاخ خفيف في البطن\n\nإدارة الألم:\n• سيصف لك الجراح مسكنات — اصرفها مسبقاً\n• تناول المسكنات بانتظام في أول ٢-٣ أيام حتى لو كان الألم خفيفاً\n• كمادات باردة على مواضع الجروح تساعد\n• المشي الخفيف يقلل الانتفاخ وألم الكتف\n\nراجع الطبيب فوراً إذا: ازداد الألم بشكل مفاجئ، أو ارتفعت حرارتك فوق ٣٨°م.',
+      follow: ['recovery', 'food', 'meds']
+    },
+    food: {
+      q: 'ماذا آكل بعد العملية؟',
+      a: 'بعد استئصال المرارة، اتبع هذا التدرج في الأكل:\n\nأول ٢٤ ساعة:\n• سوائل صافية فقط (ماء، مرق، شاي خفيف)\n• أطعمة خفيفة جداً إذا لم تشعر بغثيان\n\nأول أسبوع:\n• وجبات صغيرة ومتكررة (٥-٦ وجبات صغيرة)\n• أرز أبيض، خبز محمص، موز، تفاح مسلوق\n• دجاج مشوي أو سمك بدون زيت\n• تجنب الدهون والمقليات تماماً\n\nأول شهر:\n• أضف الأطعمة تدريجياً\n• قلل الدهون (لا أكثر من ٣ غرام دهون لكل وجبة)\n• تجنب الأطعمة الحارة والتوابل القوية\n• اشرب كمية كافية من الماء\n\nبعد ٤-٦ أسابيع: معظم الناس يعودون لنظامهم الغذائي الطبيعي تدريجياً.',
+      follow: ['recovery', 'pain', 'shower_post']
+    },
+    shower_post: {
+      q: 'متى يمكنني الاستحمام بعد العملية؟',
+      a: 'تعليمات الاستحمام بعد العملية:\n\n• عادةً يمكنك الاستحمام بعد ٢٤-٤٨ ساعة من العملية\n• استخدم ماء دافئ وليس ساخن\n• اغسل مواضع الجروح برفق بالماء والصابون\n• جفف الجروح بمنشفة نظيفة بالتربيت (لا تفرك)\n• لا تنقع في حوض الاستحمام أو حمام السباحة لمدة أسبوعين\n• لا تضع كريمات أو مراهم على الجروح إلا إذا وصفها الطبيب\n\nعلامات يجب مراجعة الطبيب بسببها:\n• احمرار أو تورم متزايد حول الجرح\n• إفرازات أو صديد من الجرح\n• حرارة مرتفعة (فوق ٣٨°م)',
+      follow: ['recovery', 'pain', 'food']
+    }
+  };
+
+  const keywords = {
+    fasting: ['صيام', 'صوم', 'أكل قبل', 'آكل قبل', 'طعام قبل', 'شرب قبل', 'أشرب', 'منتصف الليل', 'جوع'],
+    meds: ['دواء', 'أدوية', 'علاج', 'حبوب', 'مميع', 'أسبرين', 'مكمل', 'فيتامين', 'إيقاف', 'توقف', 'وقف'],
+    bring: ['أحضر', 'إحضار', 'حقيبة', 'أغراض', 'ملابس', 'هوية', 'أجيب', 'معي'],
+    recovery: ['تعافي', 'شفاء', 'عودة', 'ارجع', 'أرجع', 'عمل', 'رياضة', 'نقاهة', 'كم يوم', 'كم تستغرق', 'متى أرجع'],
+    anesthesia: ['تخدير', 'بنج', 'نوم', 'أنام', 'تنويم', 'استيقاظ', 'أستيقظ'],
+    pain: ['ألم', 'وجع', 'مسكن', 'يوجع', 'يألم', 'أتألم', 'مؤلم'],
+    food: ['أكل بعد', 'آكل بعد', 'طعام بعد', 'غذاء', 'حمية', 'دهون', 'مقلي', 'وجبة بعد'],
+    shower_post: ['استحمام بعد', 'حمام بعد', 'أستحم', 'غسل', 'جرح', 'جروح', 'ماء على']
+  };
+
+  const defaultAnswer = 'شكراً لسؤالك! هذا السؤال يتطلب استشارة فريقك الطبي المباشر للحصول على إجابة دقيقة تناسب حالتك. يمكنك الاتصال بعيادة الجراح على الرقم (٥٥٥) ٢٣٤-٥٦٧٨ أو خط التمريض على (٥٥٥) ٤٥٦-٧٨٩٠.\n\nيمكنك أيضاً سؤالي عن أحد هذه المواضيع:';
+  const defaultFollow = ['fasting', 'meds', 'bring', 'recovery', 'anesthesia', 'pain'];
+
+  function findAnswer(text) {
+    const t = text.trim().toLowerCase();
+    let bestKey = null, bestScore = 0;
+    for (const [key, words] of Object.entries(keywords)) {
+      let score = 0;
+      for (const w of words) { if (t.includes(w)) score++; }
+      if (score > bestScore) { bestScore = score; bestKey = key; }
+    }
+    if (bestKey && faq[bestKey]) return { answer: faq[bestKey].a, follow: faq[bestKey].follow };
+    return { answer: defaultAnswer, follow: defaultFollow };
+  }
+
   const fab = document.getElementById('chat-fab');
   const panel = document.getElementById('chat-panel');
   const closeBtn = document.getElementById('chat-close');
   const msgs = document.getElementById('chat-messages');
   const input = document.getElementById('chat-input');
   const sendBtn = document.getElementById('chat-send');
-  const suggestionsEl = document.getElementById('suggestions');
 
   let chatOpen = false;
+  let sending = false;
   fab.addEventListener('click', () => { chatOpen = !chatOpen; panel.classList.toggle('open', chatOpen); if (chatOpen) input.focus(); });
   closeBtn.addEventListener('click', () => { chatOpen = false; panel.classList.remove('open'); });
 
-  const turns = [];
-  let sample = null;
-  let sending = false;
-  let ctl = null;
-
-  const SYSTEM_PROMPT = 'أنت مساعد صحي متخصص في مساعدة المرضى على التحضير للعمليات الجراحية. أجب باللغة العربية دائماً. قدّم معلومات عامة ومفيدة عن التحضير للعملية، الصيام، الأدوية، ما يجب إحضاره، فترة التعافي، وغيرها. كن لطيفاً ومطمئناً. ذكّر المريض دائماً بأن يتبع تعليمات فريقه الطبي الخاص. لا تقدم تشخيصات طبية. أجب بإيجاز ووضوح. العملية المقررة هي استئصال المرارة بالمنظار.';
-
-  async function initChat() {
-    if (typeof window.claude === 'undefined' || !window.claude) return;
-    sample = await window.claude.use('sample');
-    if (!sample) {
-      suggestionsEl.hidden = true;
-      const ua = document.createElement('div');
-      ua.className = 'chat-unavailable';
-      ua.textContent = 'المساعد الذكي غير متاح حالياً في هذا العرض.';
-      msgs.after(ua);
-      input.disabled = true;
-      sendBtn.disabled = true;
-    }
+  function buildSuggestions(keys) {
+    const wrap = document.createElement('div');
+    wrap.className = 'suggestions';
+    keys.forEach(k => {
+      if (!faq[k]) return;
+      const btn = document.createElement('button');
+      btn.className = 'suggestion-chip';
+      btn.dataset.q = k;
+      const labels = { fasting:'تعليمات الصيام', meds:'الأدوية', bring:'ماذا أحضر؟', recovery:'فترة التعافي', anesthesia:'التخدير', pain:'الألم', food:'الأكل بعد العملية', shower_post:'الاستحمام بعد العملية' };
+      btn.textContent = labels[k] || k;
+      wrap.appendChild(btn);
+    });
+    return wrap;
   }
-  initChat();
 
-  function addMsg(role, text) {
+  function addUserMsg(text) {
     const div = document.createElement('div');
-    div.className = 'chat-msg ' + role;
+    div.className = 'chat-msg user';
     div.textContent = text;
     msgs.appendChild(div);
     msgs.scrollTop = msgs.scrollHeight;
-    return div;
   }
 
-  async function sendMessage(text) {
-    if (!text.trim() || sending || !sample) return;
+  function showTypingThenAnswer(answer, followKeys) {
+    const typing = document.createElement('div');
+    typing.className = 'chat-msg ai typing';
+    typing.innerHTML = '<span class="dots"><span></span><span></span><span></span></span>';
+    msgs.appendChild(typing);
+    msgs.scrollTop = msgs.scrollHeight;
+
+    const delay = 600 + Math.random() * 800;
+    setTimeout(() => {
+      typing.classList.remove('typing');
+      typing.textContent = answer;
+
+      if (followKeys && followKeys.length) {
+        const sug = buildSuggestions(followKeys);
+        msgs.appendChild(sug);
+      }
+      msgs.scrollTop = msgs.scrollHeight;
+      sending = false;
+      sendBtn.disabled = false;
+    }, delay);
+  }
+
+  function handleQuestion(key) {
+    if (sending) return;
     sending = true;
     sendBtn.disabled = true;
-    suggestionsEl.hidden = true;
-    addMsg('user', text.trim());
-    input.value = '';
-    input.style.height = 'auto';
-
-    turns.push({ role: 'user', content: text.trim() });
-
-    const thinking = document.createElement('div');
-    thinking.className = 'chat-msg thinking';
-    thinking.textContent = 'جارٍ التفكير...';
-    msgs.appendChild(thinking);
-    msgs.scrollTop = msgs.scrollHeight;
-
-    ctl = new AbortController();
-    try {
-      const fullInput = [{ role: 'user', content: SYSTEM_PROMPT }, ...turns];
-      // trim old turns if too long
-      while (fullInput.length > 20) { fullInput.splice(1, 2); }
-
-      const { text: reply } = await sample(fullInput, {
-        cache: false,
-        signal: ctl.signal,
-        modelTier: 'quick',
-        onText: ({ text: t }) => { thinking.className = 'chat-msg ai'; thinking.textContent = t; msgs.scrollTop = msgs.scrollHeight; }
-      });
-      thinking.className = 'chat-msg ai';
-      thinking.textContent = reply;
-      turns.push({ role: 'assistant', content: reply });
-    } catch(e) {
-      thinking.remove();
-      if (e.code === 'cancelled') {
-        if (e.text) addMsg('ai', e.text);
-      } else if (e.code === 'not_granted' || e.code === 'sampling_disabled') {
-        addMsg('error', 'المساعد الذكي غير متاح. يرجى المحاولة لاحقاً.');
-        sample = null;
-        input.disabled = true;
-      } else if (e.code === 'rate_limited') {
-        addMsg('error', 'تم تجاوز الحد المسموح. يرجى الانتظار قليلاً ثم المحاولة مجدداً.');
-      } else {
-        addMsg('error', 'حدث خطأ. يرجى المحاولة مرة أخرى.');
-      }
-      if (turns.length && turns[turns.length - 1].role === 'user') turns.pop();
+    if (faq[key]) {
+      addUserMsg(faq[key].q);
+      showTypingThenAnswer(faq[key].a, faq[key].follow);
     }
-    sending = false;
-    sendBtn.disabled = !sample;
-    msgs.scrollTop = msgs.scrollHeight;
   }
 
-  sendBtn.addEventListener('click', () => sendMessage(input.value));
+  function handleFreeText(text) {
+    if (!text.trim() || sending) return;
+    sending = true;
+    sendBtn.disabled = true;
+    addUserMsg(text.trim());
+    input.value = '';
+    input.style.height = 'auto';
+    const { answer, follow } = findAnswer(text);
+    showTypingThenAnswer(answer, follow);
+  }
+
+  msgs.addEventListener('click', e => {
+    const chip = e.target.closest('.suggestion-chip');
+    if (chip) handleQuestion(chip.dataset.q);
+  });
+
+  sendBtn.addEventListener('click', () => handleFreeText(input.value));
   input.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input.value); }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleFreeText(input.value); }
   });
   input.addEventListener('input', () => {
     input.style.height = 'auto';
     input.style.height = Math.min(input.scrollHeight, 100) + 'px';
-  });
-
-  suggestionsEl.addEventListener('click', e => {
-    const chip = e.target.closest('.suggestion-chip');
-    if (chip) sendMessage(chip.dataset.q);
   });
 })();
 </script>
