@@ -1,0 +1,920 @@
+<title>Surgery Prep</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap">
+<style>
+  /* Layout: single-column, card-based phases with sticky nav */
+  :root {
+    --bg: #f7f5f2;
+    --bg-card: #ffffff;
+    --fg: #2c3038;
+    --fg-muted: #6b7080;
+    --fg-dim: #9ca0ab;
+    --border: #e4e2de;
+    --teal: #2a8a7a;
+    --teal-soft: #e6f5f2;
+    --teal-hover: #237a6b;
+    --coral: #d45a4a;
+    --coral-soft: #fceae8;
+    --amber: #c48a1a;
+    --amber-soft: #fdf3e0;
+    --green: #3a8a5c;
+    --green-soft: #e8f5ec;
+    --display: 'DM Serif Display', Georgia, serif;
+    --body: 'Source Sans 3', system-ui, sans-serif;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1a1c20;
+      --bg-card: #25272c;
+      --fg: #e4e2de;
+      --fg-muted: #9ca0ab;
+      --fg-dim: #6b7080;
+      --border: #383c44;
+      --teal: #4cc4b0;
+      --teal-soft: #1e2e2b;
+      --teal-hover: #5ed4c0;
+      --coral: #ef7a6c;
+      --coral-soft: #2e2220;
+      --amber: #e8aa3a;
+      --amber-soft: #2e2818;
+      --green: #5cba7e;
+      --green-soft: #1e2e22;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1a1c20;
+    --bg-card: #25272c;
+    --fg: #e4e2de;
+    --fg-muted: #9ca0ab;
+    --fg-dim: #6b7080;
+    --border: #383c44;
+    --teal: #4cc4b0;
+    --teal-soft: #1e2e2b;
+    --teal-hover: #5ed4c0;
+    --coral: #ef7a6c;
+    --coral-soft: #2e2220;
+    --amber: #e8aa3a;
+    --amber-soft: #2e2818;
+    --green: #5cba7e;
+    --green-soft: #1e2e22;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 0 40px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0 0 auto;
+    height: env(safe-area-inset-top, 0px);
+    z-index: 10;
+    background: var(--bg);
+  }
+
+  /* Header */
+  .header {
+    padding: 32px 0 24px;
+    text-align: center;
+  }
+  .header-label {
+    font-family: var(--body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+  .header h1 {
+    font-family: var(--display);
+    font-size: clamp(28px, 5vw, 38px);
+    font-weight: 400;
+    line-height: 1.2;
+    text-wrap: balance;
+    margin-bottom: 8px;
+  }
+  .header p {
+    color: var(--fg-muted);
+    font-size: 15px;
+  }
+
+  /* Countdown */
+  .countdown {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin: 24px 0;
+    flex-wrap: wrap;
+  }
+  .countdown-unit {
+    text-align: center;
+    min-width: 64px;
+  }
+  .countdown-num {
+    font-family: var(--display);
+    font-size: 36px;
+    line-height: 1;
+    color: var(--teal);
+    font-variant-numeric: tabular-nums;
+  }
+  .countdown-label {
+    font-size: 12px;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+  }
+
+  /* Surgery info bar */
+  .surgery-info {
+    background: var(--teal-soft);
+    border: 1px solid var(--teal);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 32px;
+    margin-bottom: 32px;
+  }
+  .surgery-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .surgery-info-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--fg-muted);
+  }
+  .surgery-info-value {
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  /* Phase nav */
+  .phase-nav {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 5;
+    background: var(--bg);
+    padding: 12px 0;
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .phase-nav::-webkit-scrollbar { display: none; }
+  .phase-btn {
+    font-family: var(--body);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--fg-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .phase-btn:hover { border-color: var(--teal); color: var(--teal); }
+  .phase-btn.active {
+    background: var(--teal);
+    color: #fff;
+    border-color: var(--teal);
+  }
+  .phase-btn .count {
+    display: inline-block;
+    background: rgba(255,255,255,0.25);
+    border-radius: 100px;
+    padding: 0 6px;
+    margin-left: 6px;
+    font-size: 11px;
+  }
+  .phase-btn:not(.active) .count {
+    background: var(--teal-soft);
+    color: var(--teal);
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    margin: 8px 0 24px;
+  }
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .progress-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fg-muted);
+  }
+  .progress-pct {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--teal);
+    font-variant-numeric: tabular-nums;
+  }
+  .progress-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--teal);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 28px;
+  }
+  .section-title {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 400;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  /* Checklist */
+  .checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .check-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    user-select: none;
+  }
+  .check-item:hover { border-color: var(--teal); }
+  .check-item.done {
+    background: var(--green-soft);
+    border-color: transparent;
+  }
+  .check-item.done .check-text { text-decoration: line-through; color: var(--fg-muted); }
+  .checkbox {
+    width: 22px;
+    height: 22px;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    margin-top: 1px;
+  }
+  .check-item.done .checkbox {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .checkbox svg { opacity: 0; transition: opacity 0.15s; }
+  .check-item.done .checkbox svg { opacity: 1; }
+  .check-content { flex: 1; min-width: 0; }
+  .check-text { font-weight: 600; font-size: 15px; transition: color 0.15s; }
+  .check-desc { font-size: 13px; color: var(--fg-muted); margin-top: 2px; }
+  .check-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 100px;
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .tag-important { background: var(--coral-soft); color: var(--coral); }
+  .tag-reminder { background: var(--amber-soft); color: var(--amber); }
+
+  /* Info cards */
+  .info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .info-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .info-card h3 {
+    font-family: var(--display);
+    font-size: 17px;
+    font-weight: 400;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .info-card ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .info-card li {
+    font-size: 14px;
+    color: var(--fg-muted);
+    padding-left: 18px;
+    position: relative;
+  }
+  .info-card li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+
+  /* Alert box */
+  .alert {
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .alert-coral {
+    background: var(--coral-soft);
+    border: 1px solid var(--coral);
+  }
+  .alert-amber {
+    background: var(--amber-soft);
+    border: 1px solid var(--amber);
+  }
+  .alert-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    line-height: 1.6;
+  }
+  .alert-content { flex: 1; min-width: 0; }
+  .alert-content strong { display: block; font-size: 15px; margin-bottom: 2px; }
+  .alert-content p { font-size: 14px; color: var(--fg-muted); }
+
+  /* Contact card */
+  .contact-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 40px;
+    margin-bottom: 28px;
+  }
+  .contact-entry {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .contact-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--fg-muted);
+  }
+  .contact-value {
+    font-weight: 600;
+    font-size: 15px;
+  }
+  .contact-value a {
+    color: var(--teal);
+    text-decoration: none;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 20px 0;
+    font-size: 12px;
+    color: var(--fg-dim);
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+
+  /* Phase visibility */
+  .phase-section { display: none; }
+  .phase-section.visible { display: block; }
+
+  @media (max-width: 480px) {
+    .countdown-num { font-size: 28px; }
+    .surgery-info { gap: 10px 20px; }
+    .info-cards { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="header">
+  <div class="header-label">Patient Surgery Checklist</div>
+  <h1>Your Surgery Preparation Guide</h1>
+  <p>Everything you need to do before, during, and after your procedure</p>
+</div>
+
+<div class="countdown" id="countdown">
+  <div class="countdown-unit">
+    <div class="countdown-num" id="cd-days">14</div>
+    <div class="countdown-label">Days</div>
+  </div>
+  <div class="countdown-unit">
+    <div class="countdown-num" id="cd-hours">08</div>
+    <div class="countdown-label">Hours</div>
+  </div>
+  <div class="countdown-unit">
+    <div class="countdown-num" id="cd-mins">32</div>
+    <div class="countdown-label">Minutes</div>
+  </div>
+</div>
+
+<div class="surgery-info">
+  <div class="surgery-info-item">
+    <span class="surgery-info-label">Procedure</span>
+    <span class="surgery-info-value">Laparoscopic Cholecystectomy</span>
+  </div>
+  <div class="surgery-info-item">
+    <span class="surgery-info-label">Date</span>
+    <span class="surgery-info-value">November 2, 2026</span>
+  </div>
+  <div class="surgery-info-item">
+    <span class="surgery-info-label">Arrival Time</span>
+    <span class="surgery-info-value">6:00 AM</span>
+  </div>
+  <div class="surgery-info-item">
+    <span class="surgery-info-label">Surgeon</span>
+    <span class="surgery-info-value">Dr. Amara Osei</span>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-header">
+    <span class="progress-label">Overall Preparation</span>
+    <span class="progress-pct" id="progress-pct">0%</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+  </div>
+</div>
+
+<nav class="phase-nav" id="phase-nav"></nav>
+
+<!-- 2 Weeks Before -->
+<div class="phase-section" id="phase-2weeks" data-phase="2weeks">
+  <div class="section">
+    <div class="section-title">
+      <span class="section-icon" style="background:var(--teal-soft);color:var(--teal);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+      </span>
+      Administrative &amp; Medical
+    </div>
+    <div class="checklist" id="list-2weeks">
+      <div class="check-item" data-id="ins">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Verify insurance coverage</div>
+          <div class="check-desc">Confirm pre-authorization and understand your out-of-pocket costs</div>
+        </div>
+      </div>
+      <div class="check-item" data-id="preop">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Schedule pre-op appointment</div>
+          <div class="check-desc">Blood work, EKG, and medical clearance — usually 7-10 days before surgery</div>
+        </div>
+      </div>
+      <div class="check-item" data-id="meds">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Review medications with surgeon</div>
+          <div class="check-desc">Bring a complete list of all medications, supplements, and vitamins</div>
+          <span class="check-tag tag-important">Important</span>
+        </div>
+      </div>
+      <div class="check-item" data-id="ride">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Arrange transportation home</div>
+          <div class="check-desc">You will not be able to drive yourself after general anesthesia</div>
+        </div>
+      </div>
+      <div class="check-item" data-id="caregiver">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Arrange post-op caregiver</div>
+          <div class="check-desc">Someone to stay with you for the first 24-48 hours after surgery</div>
+        </div>
+      </div>
+      <div class="check-item" data-id="work">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Request time off work</div>
+          <div class="check-desc">Expect 1-2 weeks recovery for laparoscopic procedures</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 1 Week Before -->
+<div class="phase-section" id="phase-1week" data-phase="1week">
+  <div class="section">
+    <div class="section-title">
+      <span class="section-icon" style="background:var(--amber-soft);color:var(--amber);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </span>
+      Home &amp; Lifestyle Prep
+    </div>
+    <div class="checklist" id="list-1week">
+      <div class="check-item" data-id="groceries">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Stock up on recovery supplies</div>
+          <div class="check-desc">Easy-to-prepare meals, water, crackers, and any prescribed post-op items</div>
+        </div>
+      </div>
+      <div class="check-item" data-id="home">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Prepare your recovery area</div>
+          <div class="check-desc">Set up a comfortable space at waist height — avoid bending and reaching</div>
+        </div>
+      </div>
+      <div class="check-item" data-id="rxfill">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Fill post-op prescriptions</div>
+          <div class="check-desc">Pain medication and antibiotics — fill these before surgery day</div>
+          <span class="check-tag tag-reminder">Do this early</span>
+        </div>
+      </div>
+      <div class="check-item" data-id="stopsupp">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Stop blood thinners &amp; supplements</div>
+          <div class="check-desc">Aspirin, fish oil, vitamin E, and herbal supplements as directed by your surgeon</div>
+          <span class="check-tag tag-important">Important</span>
+        </div>
+      </div>
+      <div class="check-item" data-id="pets">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Arrange pet &amp; childcare</div>
+          <div class="check-desc">You won't be able to lift or do physical tasks for several days</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day Before -->
+<div class="phase-section" id="phase-daybefore" data-phase="daybefore">
+  <div class="alert alert-coral">
+    <span class="alert-icon">&#9888;&#65039;</span>
+    <div class="alert-content">
+      <strong>Fasting Instructions</strong>
+      <p>Do not eat solid food after midnight. You may drink clear liquids (water, apple juice, black coffee) up to 2 hours before your arrival time.</p>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">
+      <span class="section-icon" style="background:var(--coral-soft);color:var(--coral);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+      </span>
+      The Day Before
+    </div>
+    <div class="checklist" id="list-daybefore">
+      <div class="check-item" data-id="shower">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Shower with antibacterial soap</div>
+          <div class="check-desc">Use CHG (chlorhexidine) soap if provided — do not apply lotions or deodorant after</div>
+        </div>
+      </div>
+      <div class="check-item" data-id="nails">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Remove nail polish &amp; jewelry</div>
+          <div class="check-desc">Pulse oximeters read through your fingernails during surgery</div>
+        </div>
+      </div>
+      <div class="check-item" data-id="bag">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Pack your hospital bag</div>
+          <div class="check-desc">Loose clothing, slip-on shoes, ID, insurance card, and comfort items</div>
+        </div>
+      </div>
+      <div class="check-item" data-id="confirm">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Confirm arrival time &amp; location</div>
+          <div class="check-desc">Call the surgical center to double-check your check-in time and parking</div>
+        </div>
+      </div>
+      <div class="check-item" data-id="fasting">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Begin fasting at midnight</div>
+          <div class="check-desc">No food, candy, or gum. Clear liquids only until 2 hours before arrival</div>
+          <span class="check-tag tag-important">Important</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Day Of -->
+<div class="phase-section" id="phase-dayof" data-phase="dayof">
+  <div class="section">
+    <div class="section-title">
+      <span class="section-icon" style="background:var(--green-soft);color:var(--green);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </span>
+      Surgery Day
+    </div>
+    <div class="checklist" id="list-dayof">
+      <div class="check-item" data-id="amshower">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Morning shower with CHG soap</div>
+          <div class="check-desc">Second wash — no lotions, makeup, deodorant, or perfume</div>
+        </div>
+      </div>
+      <div class="check-item" data-id="okmed">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Take only approved medications</div>
+          <div class="check-desc">Small sip of water only — confirm the list with your surgeon's office</div>
+          <span class="check-tag tag-important">Important</span>
+        </div>
+      </div>
+      <div class="check-item" data-id="clothes">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Wear loose, comfortable clothing</div>
+          <div class="check-desc">Button-front or zip-up top, elastic waist pants, slip-on shoes</div>
+        </div>
+      </div>
+      <div class="check-item" data-id="docs">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Bring ID &amp; insurance cards</div>
+          <div class="check-desc">Photo ID, insurance card, and any signed consent forms</div>
+        </div>
+      </div>
+      <div class="check-item" data-id="arrive">
+        <div class="checkbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div class="check-content">
+          <div class="check-text">Arrive at scheduled time</div>
+          <div class="check-desc">Allow extra time for check-in, paperwork, and pre-op preparation</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reference section (always visible) -->
+<div id="phase-reference" class="phase-section">
+  <div class="section">
+    <div class="section-title">
+      <span class="section-icon" style="background:var(--teal-soft);color:var(--teal);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      </span>
+      What to Bring
+    </div>
+  </div>
+  <div class="info-cards">
+    <div class="info-card">
+      <h3>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Documents
+      </h3>
+      <ul>
+        <li>Photo ID (driver's license or passport)</li>
+        <li>Insurance card and referral forms</li>
+        <li>Signed consent and advance directive</li>
+        <li>List of current medications</li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h3>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        Personal Items
+      </h3>
+      <ul>
+        <li>Loose, comfortable going-home clothes</li>
+        <li>Slip-on shoes (no laces)</li>
+        <li>Phone and charger</li>
+        <li>A book or something to pass the time</li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h3>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+        Leave at Home
+      </h3>
+      <ul>
+        <li>Jewelry, watches, and piercings</li>
+        <li>Valuables and large amounts of cash</li>
+        <li>Contact lenses (bring glasses instead)</li>
+        <li>Dentures and hearing aids (bring cases)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="alert alert-amber">
+    <span class="alert-icon">&#128138;</span>
+    <div class="alert-content">
+      <strong>Medication Reminder</strong>
+      <p>Do not stop or change any prescribed medication without your surgeon's approval. Blood thinners, diabetes medications, and blood pressure drugs may need special timing.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">
+      <span class="section-icon" style="background:var(--green-soft);color:var(--green);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      </span>
+      Important Contacts
+    </div>
+  </div>
+  <div class="contact-card">
+    <div class="contact-entry">
+      <span class="contact-label">Surgeon's Office</span>
+      <span class="contact-value">(555) 234-5678</span>
+    </div>
+    <div class="contact-entry">
+      <span class="contact-label">Surgical Center</span>
+      <span class="contact-value">(555) 345-6789</span>
+    </div>
+    <div class="contact-entry">
+      <span class="contact-label">Pre-Op Nurse Line</span>
+      <span class="contact-value">(555) 456-7890</span>
+    </div>
+    <div class="contact-entry">
+      <span class="contact-label">After-Hours Emergency</span>
+      <span class="contact-value">(555) 567-8901</span>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  This is a demo application with sample data. Always follow your surgical team's specific instructions.
+</div>
+
+<script>
+(function() {
+  const phases = [
+    { id: '2weeks', label: '2 Weeks Before' },
+    { id: '1week', label: '1 Week Before' },
+    { id: 'daybefore', label: 'Day Before' },
+    { id: 'dayof', label: 'Day Of' },
+    { id: 'reference', label: 'Reference' }
+  ];
+
+  let checkedItems = {};
+  try {
+    const saved = localStorage.getItem('surgery-prep-checked');
+    if (saved) checkedItems = JSON.parse(saved);
+  } catch(e) {}
+
+  function saveState() {
+    try { localStorage.setItem('surgery-prep-checked', JSON.stringify(checkedItems)); } catch(e) {}
+  }
+
+  // Build phase nav
+  const nav = document.getElementById('phase-nav');
+  let activePhase = '2weeks';
+  try {
+    const saved = localStorage.getItem('surgery-prep-phase');
+    if (saved && phases.some(p => p.id === saved)) activePhase = saved;
+  } catch(e) {}
+
+  function getPhaseCount(phaseId) {
+    const section = document.getElementById('phase-' + phaseId);
+    if (!section) return null;
+    const items = section.querySelectorAll('.check-item');
+    if (items.length === 0) return null;
+    const done = Array.from(items).filter(i => i.classList.contains('done')).length;
+    return done + '/' + items.length;
+  }
+
+  function renderNav() {
+    nav.innerHTML = '';
+    phases.forEach(p => {
+      const btn = document.createElement('button');
+      btn.className = 'phase-btn' + (p.id === activePhase ? ' active' : '');
+      btn.textContent = p.label;
+      const count = getPhaseCount(p.id);
+      if (count !== null) {
+        const span = document.createElement('span');
+        span.className = 'count';
+        span.textContent = count;
+        btn.appendChild(span);
+      }
+      btn.addEventListener('click', () => {
+        activePhase = p.id;
+        try { localStorage.setItem('surgery-prep-phase', activePhase); } catch(e) {}
+        showPhase();
+        renderNav();
+      });
+      nav.appendChild(btn);
+    });
+  }
+
+  function showPhase() {
+    document.querySelectorAll('.phase-section').forEach(el => {
+      el.classList.toggle('visible', el.id === 'phase-' + activePhase);
+    });
+  }
+
+  // Restore checked states and attach click handlers
+  document.querySelectorAll('.check-item').forEach(item => {
+    const id = item.dataset.id;
+    if (checkedItems[id]) item.classList.add('done');
+    item.addEventListener('click', () => {
+      item.classList.toggle('done');
+      checkedItems[id] = item.classList.contains('done');
+      saveState();
+      updateProgress();
+      renderNav();
+    });
+  });
+
+  function updateProgress() {
+    const all = document.querySelectorAll('.check-item');
+    const done = document.querySelectorAll('.check-item.done');
+    const pct = all.length ? Math.round((done.length / all.length) * 100) : 0;
+    document.getElementById('progress-pct').textContent = pct + '%';
+    document.getElementById('progress-fill').style.width = pct + '%';
+  }
+
+  // Countdown timer (surgery date: Nov 2, 2026, 6:00 AM)
+  const surgeryDate = new Date(2026, 10, 2, 6, 0, 0);
+  function updateCountdown() {
+    const now = new Date();
+    let diff = surgeryDate - now;
+    if (diff < 0) diff = 0;
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    document.getElementById('cd-days').textContent = String(days).padStart(2, '0');
+    document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+    document.getElementById('cd-mins').textContent = String(mins).padStart(2, '0');
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 60000);
+
+  renderNav();
+  showPhase();
+  updateProgress();
+})();
+</script>
