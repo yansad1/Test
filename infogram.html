@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700;800&display=swap">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  background: #063E48;
+  color: #fff;
+  width: 1080px;
+  margin: 0 auto;
+}
+
+.poster {
+  width: 1080px;
+  background: #FAFCFC;
+  color: #0C2B33;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── HEADER ── */
+.hdr {
+  background: linear-gradient(155deg, #042D35, #0A7380);
+  color: #fff;
+  padding: 56px 60px 44px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hdr::before {
+  content: "";
+  position: absolute;
+  top: -80px; right: -120px;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: rgba(226,169,47,.08);
+}
+.hdr::after {
+  content: "";
+  position: absolute;
+  bottom: -60px; left: -80px;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.04);
+}
+.hdr > * { position: relative; z-index: 1; }
+.hdr .badge {
+  display: inline-block;
+  background: rgba(255,255,255,.14);
+  border-radius: 999px;
+  padding: 6px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: .03em;
+  margin-bottom: 18px;
+}
+.hdr h1 {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+.hdr h1 em { font-style: normal; color: #E2A92F; }
+.hdr .sub {
+  font-size: 18px;
+  opacity: .85;
+  margin-top: 12px;
+  line-height: 1.8;
+}
+
+/* ── STAT STRIP ── */
+.strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: #052E36;
+}
+.strip .s {
+  text-align: center;
+  padding: 28px 16px;
+  border-inline-end: 1px solid rgba(255,255,255,.1);
+  color: #fff;
+}
+.strip .s:last-child { border-inline-end: none; }
+.strip .s .n {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.strip .s .n small { font-size: 24px; font-weight: 600; }
+.strip .s .l {
+  font-size: 14px;
+  opacity: .75;
+  margin-top: 6px;
+}
+
+/* ── SECTION LABEL ── */
+.sec-label {
+  padding: 32px 60px 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.sec-label .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: none;
+}
+.sec-label span {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.sec-label .line {
+  flex: 1;
+  height: 1px;
+  background: #D8E6E8;
+}
+
+/* ── 4 AXES ── */
+.axes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px 60px 0;
+}
+.ax {
+  background: #fff;
+  border: 1px solid #E3ECED;
+  border-radius: 20px;
+  padding: 28px 24px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  box-shadow: 0 2px 12px rgba(12,43,51,.04);
+}
+.ax .ico {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ax .ico svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.ax.c1 .ico { background: #FDEDEB; color: #C0392B; }
+.ax.c2 .ico { background: #FCF3DF; color: #8A5E0F; }
+.ax.c3 .ico { background: #DCF0F2; color: #0A7380; }
+.ax.c4 .ico { background: #EDE9FE; color: #6C5CE7; }
+
+.ax .body { flex: 1; min-width: 0; }
+.ax .tag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.ax.c1 .tag { color: #C0392B; }
+.ax.c2 .tag { color: #8A5E0F; }
+.ax.c3 .tag { color: #0A7380; }
+.ax.c4 .tag { color: #6C5CE7; }
+
+.ax h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.ax .big {
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 8px;
+}
+.ax .big small { font-size: 20px; font-weight: 600; }
+.ax.c1 .big { color: #C0392B; }
+.ax.c2 .big { color: #8A5E0F; }
+.ax.c3 .big { color: #0A7380; }
+.ax.c4 .big { color: #6C5CE7; }
+
+.ax .bar { height: 8px; border-radius: 99px; background: #F0F6F7; overflow: hidden; margin-bottom: 10px; }
+.ax .bar i { display: block; height: 100%; border-radius: 99px; }
+.ax.c1 .bar i { background: #C0392B; width: 42%; }
+.ax.c2 .bar i { background: #E2A92F; width: 37%; }
+.ax.c3 .bar i { background: #0A7380; width: 43%; }
+.ax.c4 .bar i { background: #6C5CE7; width: 3%; }
+
+.ax .desc { font-size: 13px; color: #5A737A; line-height: 1.7; }
+.ax .src { font-size: 11px; color: #5A737A; opacity: .6; margin-top: 6px; }
+
+/* ── COST BAND ── */
+.cost {
+  margin: 24px 60px 0;
+  background: #F0F6F7;
+  border-radius: 18px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+}
+.cost .c { text-align: center; }
+.cost .c .n {
+  font-size: 32px;
+  font-weight: 800;
+  color: #0A7380;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.cost .c .l { font-size: 13px; color: #5A737A; }
+.cost .div { width: 2px; height: 44px; background: #D8E6E8; border-radius: 2px; }
+
+/* ── EVIDENCE ── */
+.evs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  padding: 20px 60px 0;
+}
+.ev {
+  background: #fff;
+  border: 1px solid #E3ECED;
+  border-radius: 16px;
+  padding: 20px 16px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(12,43,51,.03);
+}
+.ev .cmp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.ev .v {
+  font-size: 26px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.ev .v.b { color: #C0392B; }
+.ev .v.a { color: #1B7443; }
+.ev .arr { color: #1B7443; font-weight: 700; font-size: 18px; }
+.ev .d { font-size: 12px; color: #5A737A; line-height: 1.4; }
+.ev .sr { font-size: 10px; color: #5A737A; opacity: .5; margin-top: 4px; }
+
+/* ── SOLUTION SECTION ── */
+.sol-hdr {
+  margin: 0 60px;
+  margin-top: 32px;
+  background: linear-gradient(155deg, #063E48, #0A7380);
+  color: #fff;
+  border-radius: 20px;
+  padding: 32px 36px;
+  text-align: center;
+}
+.sol-hdr h2 { font-size: 30px; font-weight: 800; }
+.sol-hdr h2 em { font-style: normal; color: #E2A92F; }
+.sol-hdr p { font-size: 16px; opacity: .85; margin-top: 8px; }
+
+/* ── FEATURES GRID ── */
+.feats {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  padding: 20px 60px 0;
+}
+.ft {
+  background: #fff;
+  border: 1px solid #E3ECED;
+  border-radius: 16px;
+  padding: 20px 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(12,43,51,.03);
+}
+.ft .fi {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ft .fi svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ft:nth-child(1) .fi { background: #DCF0F2; color: #0A7380; }
+.ft:nth-child(2) .fi { background: #FCF3DF; color: #8A5E0F; }
+.ft:nth-child(3) .fi { background: #E1F3E8; color: #1B7443; }
+.ft:nth-child(4) .fi { background: #FDEDEB; color: #C0392B; }
+.ft:nth-child(5) .fi { background: #EDE9FE; color: #6C5CE7; }
+.ft:nth-child(6) .fi { background: #DBEAFE; color: #2563EB; }
+.ft h3 { font-size: 13px; font-weight: 700; line-height: 1.4; }
+.ft p { font-size: 11px; color: #5A737A; line-height: 1.5; }
+
+/* ── APP MOCKUP ── */
+.mock-label {
+  padding: 28px 60px 0;
+  text-align: center;
+}
+.mock-label span {
+  display: inline-block;
+  background: #FCF3DF;
+  color: #8A5E0F;
+  border-radius: 999px;
+  padding: 4px 18px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.phones {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  padding: 20px 60px 0;
+}
+.pw { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.pw .pl {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0A7380;
+  background: #DCF0F2;
+  border-radius: 999px;
+  padding: 3px 14px;
+}
+.phone {
+  position: relative;
+  width: 200px;
+  height: 400px;
+  border: 6px solid #0C2B33;
+  border-radius: 32px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(12,43,51,.15);
+}
+.phone .notch {
+  position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 64px; height: 16px;
+  background: #0C2B33;
+  border-radius: 0 0 10px 10px;
+  z-index: 2;
+}
+.scr {
+  height: 100%;
+  padding: 26px 9px 9px;
+  font-size: 10px;
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #F0F9FA;
+  direction: rtl;
+  overflow: hidden;
+}
+.mh {
+  border-radius: 12px;
+  padding: 9px;
+  background: linear-gradient(150deg, #063E48, #0A7380);
+  color: #fff;
+}
+.mh b { display: block; font-size: 11px; }
+.mh small { opacity: .8; font-size: 8px; }
+.mh .mb { height: 5px; border-radius: 99px; background: rgba(255,255,255,.25); margin-top: 6px; overflow: hidden; }
+.mh .mb i { display: block; height: 100%; width: 43%; background: #fff; border-radius: 99px; }
+.mc {
+  background: #fff;
+  border: 1px solid #E3ECED;
+  border-radius: 10px;
+  padding: 7px 8px;
+}
+.mc.hl { background: #DCF0F2; border-color: transparent; }
+.mc .mt { font-size: 8px; font-weight: 700; color: #0A7380; }
+.mc b { display: block; font-size: 9.5px; margin: 2px 0 4px; }
+.mbtn { display: inline-block; background: #0A7380; color: #fff; border-radius: 7px; padding: 2px 10px; font-size: 8px; font-weight: 600; }
+.mnav {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-around;
+  padding-top: 5px;
+  border-top: 1px solid #E3ECED;
+}
+.mnav span { width: 16px; height: 16px; border-radius: 6px; background: #F0F6F7; }
+.mnav span.on { background: #0A7380; }
+.mfab {
+  position: absolute;
+  bottom: 36px; left: 10px;
+  background: #E2A92F;
+  color: #0C2B33;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+/* Learn items */
+.mi {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #E3ECED;
+  border-radius: 10px;
+  padding: 6px 7px;
+}
+.mi .badge {
+  flex: none; width: 28px; height: 28px;
+  border-radius: 8px;
+  background: #DCF0F2; color: #0A7380;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 9px;
+}
+.mi .badge.ok { background: #E1F3E8; color: #1B7443; }
+.mi .tx b { display: block; font-size: 9px; }
+.mi .tx small { font-size: 7px; color: #5A737A; }
+.mi .pr { height: 3px; border-radius: 99px; background: #F0F6F7; overflow: hidden; margin-top: 2px; }
+.mi .pr i { display: block; height: 100%; background: #0A7380; border-radius: 99px; }
+
+/* Checklist */
+.mk {
+  display: flex; gap: 6px; align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px solid #E3ECED;
+  font-size: 9px;
+}
+.mk:last-child { border-bottom: none; }
+.ck {
+  flex: none; width: 18px; height: 18px;
+  border-radius: 6px;
+  border: 1.5px solid #D8E6E8;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700;
+}
+.ck.on { background: #1B7443; border-color: #1B7443; color: #fff; }
+
+/* ── FOOTER ── */
+.ftr {
+  background: #042D35;
+  color: #fff;
+  padding: 28px 60px;
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ftr .logo { font-size: 28px; font-weight: 800; }
+.ftr .logo em { font-style: normal; color: #E2A92F; }
+.ftr .info { text-align: left; direction: ltr; }
+.ftr .info .tagline { font-size: 14px; font-weight: 600; opacity: .9; }
+.ftr .info .credits { font-size: 11px; opacity: .5; }
+</style>
+</head>
+<body>
+<div class="poster">
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="badge">مشروع هاكاثون ٢٠٢٦</div>
+    <h1><em>تهيّأ</em> — أول منصة سعودية للتحضير الجراحي</h1>
+    <p class="sub">في السعودية، ٤ من كل ١٠ مرضى يدخلون العملية قلقانين، و١ من كل ١٤ عملية تُلغى — أغلبها لأسباب كان ممكن نتفاداها</p>
+  </div>
+
+  <!-- STAT STRIP -->
+  <div class="strip">
+    <div class="s"><div class="n">٤٢<small>%</small></div><div class="l">قلق قبل العملية</div></div>
+    <div class="s"><div class="n">٣٧<small>%</small></div><div class="l">ما يعرفون البدائل</div></div>
+    <div class="s"><div class="n">٤٣<small>%</small></div><div class="l">إلغاء بسبب المريض</div></div>
+    <div class="s"><div class="n">٠</div><div class="l">تطبيق تحضير سعودي</div></div>
+  </div>
+
+  <!-- PROBLEM LABEL -->
+  <div class="sec-label">
+    <div class="dot" style="background:#C0392B"></div>
+    <span style="color:#C0392B">المشكلة — ٤ محاور</span>
+    <div class="line"></div>
+  </div>
+
+  <!-- 4 AXES -->
+  <div class="axes">
+    <div class="ax c1">
+      <div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 15s1.5-2 4-2 4 2 4 2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
+      <div class="body">
+        <div class="tag">المحور ١</div>
+        <h3>القلق</h3>
+        <div class="big">٤٢.٣<small>%</small></div>
+        <div class="bar"><i></i></div>
+        <div class="desc">يعانون من قلق قبل العملية — الألم (٥٤٪) ونتائج العملية (٤٩٪) أكبر المخاوف</div>
+        <div class="src">PubMed 41071151 · PMC13099059 · 2025</div>
+      </div>
+    </div>
+    <div class="ax c2">
+      <div class="ico"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+      <div class="body">
+        <div class="tag">المحور ٢</div>
+        <h3>التثقيف</h3>
+        <div class="big">٣٧<small>%</small></div>
+        <div class="bar"><i></i></div>
+        <div class="desc">ما عرفوا البدائل المتاحة — التثقيف شفهي مرة وحدة في العيادة</div>
+        <div class="src">PMC10466169 · ١,٣٦٠ مريض · 2023</div>
+      </div>
+    </div>
+    <div class="ax c3">
+      <div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
+      <div class="body">
+        <div class="tag">المحور ٣</div>
+        <h3>الإلغاء</h3>
+        <div class="big">٤٣<small>%</small></div>
+        <div class="bar"><i></i></div>
+        <div class="desc">من الإلغاءات بسبب المريض — عدم الحضور (٢١٪) السبب الأول</div>
+        <div class="src">SJA · Tayeb 2024 · جامعة الملك عبدالعزيز</div>
+      </div>
+    </div>
+    <div class="ax c4">
+      <div class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
+      <div class="body">
+        <div class="tag">المحور ٤</div>
+        <h3>الفجوة الرقمية</h3>
+        <div class="big">٠</div>
+        <div class="bar"><i></i></div>
+        <div class="desc">تطبيقات تحضير سعودية — رغم أن ٨٦٪ مستعدين لتطبيق صحي</div>
+        <div class="src">PMC12193350 · PMC12649393 · 2025–2026</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COST BAND -->
+  <div class="cost">
+    <div class="c"><div class="n">٤٥,٥٠٠</div><div class="l">عملية ملغاة سنوياً</div></div>
+    <div class="div"></div>
+    <div class="c"><div class="n">١.٥ مليار ر.س</div><div class="l">هدر مالي مقدّر</div></div>
+    <div class="div"></div>
+    <div class="c"><div class="n">١٢,٠٠٠</div><div class="l">عملية أسبوعياً</div></div>
+  </div>
+
+  <!-- EVIDENCE LABEL -->
+  <div class="sec-label" style="margin-top:8px">
+    <div class="dot" style="background:#1B7443"></div>
+    <span style="color:#1B7443">الدليل الدولي — التحضير الرقمي يشتغل</span>
+    <div class="line"></div>
+  </div>
+
+  <div class="evs">
+    <div class="ev">
+      <div class="cmp"><div class="v b">٢٨%</div><div class="arr">←</div><div class="v a">١٥%</div></div>
+      <div class="d">تقليل المضاعفات مع التطبيق</div>
+      <div class="sr">EU Urology Focus · 2025</div>
+    </div>
+    <div class="ev">
+      <div class="v a" style="font-size:28px; margin-bottom:6px;">−١.٤٠</div>
+      <div class="d">تقليل القلق (SMD) — التثقيف عبر الويب</div>
+      <div class="sr">١٩ تجربة · PMC12316422 · 2025</div>
+    </div>
+    <div class="ev">
+      <div class="v a" style="font-size:28px; margin-bottom:6px;">−٣ أيام</div>
+      <div class="d">تقليل الإقامة بالتأهيل المسبق</div>
+      <div class="sr">Frontiers in Surgery · 2021</div>
+    </div>
+    <div class="ev">
+      <div class="v a" style="font-size:28px; margin-bottom:6px;">−١٨%</div>
+      <div class="d">انخفاض مضاعفات المرضى الهشّين</div>
+      <div class="sr">Ann Surg Oncology · 2025</div>
+    </div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="sol-hdr">
+    <h2>الحل: <em>تهيّأ</em> يحضّر المريض من جواله</h2>
+    <p>أول تطبيق سعودي يحوّل التحضير الجراحي من تجربة شفهية لمسار رقمي منظّم</p>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="feats">
+    <div class="ft">
+      <div class="fi"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+      <h3>رحلتي</h3>
+      <p>مسار واضح وتذكيرات</p>
+    </div>
+    <div class="ft">
+      <div class="fi"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+      <h3>أتعلّم</h3>
+      <p>تعليم تفاعلي واختبارات</p>
+    </div>
+    <div class="ft">
+      <div class="fi"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <h3>جاهزيتي</h3>
+      <p>قائمة تحقق شاملة</p>
+    </div>
+    <div class="ft">
+      <div class="fi"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+      <h3>ثقة</h3>
+      <p>تمارين تنفس ومقياس قلق</p>
+    </div>
+    <div class="ft">
+      <div class="fi"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <h3>عائلتي</h3>
+      <p>خطة عودة وإشراك الأهل</p>
+    </div>
+    <div class="ft">
+      <div class="fi"><svg viewBox="0 0 24 24"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>
+      <h3>التعافي</h3>
+      <p>تقييم يومي وتنبيهات</p>
+    </div>
+  </div>
+
+  <!-- MOCKUP LABEL -->
+  <div class="mock-label"><span>نظرة أولى على التطبيق</span></div>
+
+  <!-- PHONES -->
+  <div class="phones">
+    <div class="pw">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="scr">
+          <div class="mh">
+            <b>أهلاً أحمد 👋</b>
+            <small>عمليتك بعد ٧ أيام</small>
+            <div class="mb"><i></i></div>
+            <small style="font-size:7px; margin-top:2px; display:block;">٣ من ٧ مهام</small>
+          </div>
+          <div class="mc hl"><div class="mt">الخطوة التالية</div><b>حجز موعد التخدير</b><div class="mbtn">ابدأ</div></div>
+          <div class="mc"><div class="mt">📅</div><b>فحوصات الدم — الأحد</b></div>
+          <div class="mnav"><span class="on"></span><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+        <div class="mfab">💬 رفيق</div>
+      </div>
+      <div class="pl">رحلتي</div>
+    </div>
+
+    <div class="pw">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="scr">
+          <div style="font-size:11px; font-weight:700; padding:3px 0;">📚 أتعلّم</div>
+          <div class="mi"><div class="badge ok">✓</div><div class="tx"><b>ما هي العملية؟</b><small>مكتمل</small><div class="pr"><i style="width:100%"></i></div></div></div>
+          <div class="mi"><div class="badge">٢</div><div class="tx"><b>التخدير وأنواعه</b><small>٢ من ٤</small><div class="pr"><i style="width:50%"></i></div></div></div>
+          <div class="mi"><div class="badge">٣</div><div class="tx"><b>التعافي والعودة</b><small>لم يبدأ</small><div class="pr"><i style="width:0%"></i></div></div></div>
+          <div class="mc" style="margin-top:auto; margin-bottom:24px; background:#FCF3DF;"><div style="font-size:7px; font-weight:600; color:#8A5E0F;">💡</div><b style="font-size:8px;">التثقيف يقلل القلق ٥٥٪</b></div>
+          <div class="mnav"><span></span><span class="on"></span><span></span><span></span><span></span><span></span></div>
+        </div>
+      </div>
+      <div class="pl">أتعلّم</div>
+    </div>
+
+    <div class="pw">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="scr">
+          <div style="font-size:11px; font-weight:700; padding:3px 0;">✅ جاهزيتي</div>
+          <div style="text-align:center; margin:4px 0;"><div style="font-size:20px; font-weight:800; color:#0A7380;">٤ / ٧</div><div style="font-size:7px; color:#5A737A;">مهام مكتملة</div></div>
+          <div class="mc" style="padding:5px 7px;">
+            <div class="mk"><div class="ck on">✓</div> تأكيد الموعد</div>
+            <div class="mk"><div class="ck on">✓</div> فحوصات الدم</div>
+            <div class="mk"><div class="ck on">✓</div> موعد التخدير</div>
+            <div class="mk"><div class="ck on">✓</div> الفيديو التعليمي</div>
+            <div class="mk"><div class="ck"></div> مراجعة الأدوية</div>
+            <div class="mk"><div class="ck"></div> الصيام</div>
+            <div class="mk"><div class="ck"></div> تجهيز البيت</div>
+          </div>
+          <div class="mnav" style="margin-top:auto;"><span></span><span></span><span class="on"></span><span></span><span></span><span></span></div>
+        </div>
+      </div>
+      <div class="pl">جاهزيتي</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="ftr">
+    <div class="logo"><em>تهيّأ</em> | Tahayya</div>
+    <div class="info">
+      <div class="tagline">First Saudi Digital Surgery Prep Platform</div>
+      <div class="credits">All stats from peer-reviewed studies 2021–2026 · PubMed · PMC · SJA</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
